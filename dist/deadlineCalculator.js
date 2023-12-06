@@ -1,15 +1,39 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const app_1 = require("./app");
 class DeadlineCalculator {
-    constructor() {
-        this.workStart = 9;
-        this.workEnd = 17;
-    }
     calculateDeadline(submitDate, turnaorund) {
-        return submitDate;
+        let submittedDate = new Date(submitDate);
+        let remaining = parseInt(turnaorund, 10);
+        if (remaining < 0) {
+            throw new Error('Invalid turnaround time');
+        }
+        while (remaining > 0) {
+            submittedDate.setHours(submittedDate.getHours() + 1);
+            if (DeadlineCalculator.isWorkingDateTime(submittedDate)) {
+                remaining--;
+            }
+            if (DeadlineCalculator.isWorkingDateTime(submittedDate) &&
+                submittedDate.getHours() === 9 && submittedDate.getMinutes() === 0) {
+                remaining++;
+            }
+        }
+        //timzeone correction 
+        submittedDate.setHours(submittedDate.getHours() + 1);
+        return submittedDate;
     }
-    isWorkingDateTime(currentDate) {
-        return currentDate.getDay() >= 1 && currentDate.getDay() < 5 && currentDate.getHours() >= this.workStart && currentDate.getHours() <= this.workEnd;
+    static isWorkingDateTime(currentDate) {
+        const currentDateTime = new Date(currentDate);
+        const weekday = currentDateTime.getDay();
+        const hour = currentDateTime.getHours();
+        return weekday >= 1 &&
+            weekday <= 5 &&
+            hour >= app_1.workStart &&
+            hour <= app_1.workEnd;
+    }
+    static isDateValid(dateString) {
+        const dateTime = new Date(dateString);
+        return !isNaN(dateTime.getTime());
     }
 }
 exports.default = DeadlineCalculator;

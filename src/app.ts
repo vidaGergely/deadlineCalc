@@ -1,32 +1,30 @@
 import express from 'express';
 import { Request, Response } from 'express';
 import DeadlineCalculator from './deadlineCalculator';
+import DeadLineValidator from './deadlineValidator';
+import ValidationException from './validationException';
 
 const app = express();
 const port = 8000;
 
-app.use(express.json());
+export const workStart: number = 9;
+export const workEnd: number = 17;
 
+app.use(express.json());
 
 
 app.post('/calculate-deadline', (request: Request, response: Response) => {
   try {
     const { submitDate, turnaround } = request.body;
-
-    if (!submitDate || !turnaround) {
-      throw new Error('Invalid request. Please provide submitDate and turnaround.');
-    }
-
-    if (!DeadlineCalculator.isDateValid(submitDate)) {
-      throw new Error('Date time format is not correct.');
-    }
+    DeadLineValidator.validate(submitDate, turnaround);
 
     const deadlineCalculator = new DeadlineCalculator();
-
     const result: Date = deadlineCalculator.calculateDeadline(submitDate, turnaround);
-    response.json(result);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'An error occurred.';
+
+    response.json({ 'result': result });
+  }
+  catch (error) {
+    const errorMessage = error instanceof ValidationException ? error.message : 'An error occurred.';
     response.status(400).json({
       'error': errorMessage
     })

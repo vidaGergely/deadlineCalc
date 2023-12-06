@@ -20,7 +20,6 @@ class DeadLineValidator {
     public static isWorkingDateTime(currentDateTime: Date): boolean {
         const weekday: number = currentDateTime.getDay();
         const hour: number = currentDateTime.getHours();
-        const seconds: number = currentDateTime.getMilliseconds();
 
         return weekday >= 1 && weekday <= 5 && hour >= workStart && hour < workEnd;
     }

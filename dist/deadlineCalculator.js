@@ -1,6 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const app_1 = require("./app");
+const deadlineValidator_1 = __importDefault(require("./deadlineValidator"));
 class DeadlineCalculator {
     calculateDeadline(submitDate, turnaorund) {
         let submittedDate = new Date(submitDate);
@@ -10,30 +13,17 @@ class DeadlineCalculator {
         }
         while (remaining > 0) {
             submittedDate.setHours(submittedDate.getHours() + 1);
-            if (DeadlineCalculator.isWorkingDateTime(submittedDate)) {
+            if (deadlineValidator_1.default.isWorkingDateTime(submittedDate)) {
                 remaining--;
-            }
-            if (DeadlineCalculator.isWorkingDateTime(submittedDate) &&
-                submittedDate.getHours() === 9 && submittedDate.getMinutes() === 0) {
-                remaining++;
+                //turning every day at once in 00:00
+                if (submittedDate.getHours() === 0 && submittedDate.getMinutes() === 0) {
+                    remaining++;
+                }
             }
         }
         //timzeone correction 
         submittedDate.setHours(submittedDate.getHours() + 1);
         return submittedDate;
-    }
-    static isWorkingDateTime(currentDate) {
-        const currentDateTime = new Date(currentDate);
-        const weekday = currentDateTime.getDay();
-        const hour = currentDateTime.getHours();
-        return weekday >= 1 &&
-            weekday <= 5 &&
-            hour >= app_1.workStart &&
-            hour <= app_1.workEnd;
-    }
-    static isDateValid(dateString) {
-        const dateTime = new Date(dateString);
-        return !isNaN(dateTime.getTime());
     }
 }
 exports.default = DeadlineCalculator;

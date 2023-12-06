@@ -17,6 +17,14 @@ npm install
 
 ## Usage
 
+### To start the server, run:
+
+```bash
+node dist/app.js
+```
+This will start the server, and you can access it at http://localhost:8000
+
+
 ### Build
 
 To build the TypeScript code, run:
@@ -44,4 +52,3 @@ This will watch for changes in the TypeScript files and automatically restart th
 [Gregory Vida]
 
 ---
-
